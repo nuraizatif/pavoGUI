@@ -1,0 +1,7 @@
+Flask
+Flask-Bootstrap
+Flask-WTF
+var-dump
+orator
+requests
+gunicorn
