@@ -22,3 +22,12 @@ ssl = True
 sender_address = your@email.com
 sender_name = "Your Sender Name"
 debug = False
+
+[pivotal]
+url = https://www.pivotaltracker.com/services/v5
+user_token =
+pronghorn_project_id =
+munnin_project_id =
+huggin_project_id =
+frigate_project_id =
+phoenix_project_id =

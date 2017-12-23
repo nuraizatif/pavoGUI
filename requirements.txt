@@ -5,3 +5,5 @@ flask-orator
 var-dump
 requests
 gunicorn
+cerberus
+mysqlclient
