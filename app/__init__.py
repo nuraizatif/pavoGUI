@@ -1,20 +1,21 @@
-import config, os
+# Import config class {root_dir}/config.py.
+import config, orator, os
 
-from flask import Flask, render_template
-from flask_wtf import Form 
-from wtforms import StringField, PasswordField
-from wtforms.validators import InputRequired, Email, Length, AnyOf
+# Import important class.
+from flask import Flask, render_template, redirect, url_for
+from flask_wtf import Form
+from flask_orator import Orator
 from flask_bootstrap import Bootstrap
 
+# Import development class.
 from var_dump import var_dump
 
-app = Flask(__name__)
-Bootstrap(app)
-app.config['SECRET_KEY'] = 'DontTellAnyone'
+# Create app variable.
+app = Flask(__name__, static_folder="static")
 
 # Try to get config variable.
 try:
-  ## check environment var
+  ## check environment var.
   env = os.environ.get('FLASK_ENV', 'development')
   if env=='production':
     app.config.from_object(config.ProductionConfig)
@@ -27,19 +28,22 @@ try:
 except Exception as e:
   raise e
 
+# Use Bootstrap class .
+Bootstrap(app)
+# Create db varuable.
+db  = Orator(app)
 
-class LoginForm(Form):
-  username = StringField('username', validators=[InputRequired(), Email(message='I don\'t like your email.')])
+# Import Blueprint.
+from app.pivotal.views import pivotal as pivotalForm
 
-@app.route('/', methods=['GET', 'POST'])
+# Registering Blueprint.
+app.register_blueprint(pivotalForm)
+
+# Registering Index Apps.
+@app.route('/')
 def index():
-
-  form = LoginForm()
-  var_dump('form', form)
-
-  if form.validate_on_submit():
-    return 'Form Successfully Submitted!'
-  return render_template('index.html', form=form)
+  ## Redirect to pivotal form.
+  return redirect(url_for('pivotal.pivotal_form'))
 
 if __name__ == '__main__':
   app.run(debug=True)

@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Development phase file
+config.cfg
+orator.yaml
+
 # C extensions
 *.so
 

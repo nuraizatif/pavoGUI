@@ -1,14 +1,15 @@
 [app]
 name = atmosphere
+secret_key = DontTellAnyone
 
 [database]
 default_connection = mysql
 
 [mysql]
 host = localhost
-db = atmosphere
-user = root
-password = 4izatgantenG
+db = database_name
+user = database_user
+password = your_password
 prefix =
 log_queries = false
 

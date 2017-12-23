@@ -1,7 +1,7 @@
 Flask
 Flask-Bootstrap
 Flask-WTF
+flask-orator
 var-dump
-orator
 requests
 gunicorn

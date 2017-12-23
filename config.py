@@ -30,6 +30,7 @@ class Config():
   }
 
   APP_NAME = cfg['app']['name']
+  SECRET_KEY = cfg['app']['secret_key']
 
 class ProductionConfig(Config):
   DEBUG = False
