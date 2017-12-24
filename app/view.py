@@ -23,7 +23,15 @@ class BaseCrud():
       self.response['data'] = result.serialize()
     else:
       self.response['message'] = u'Data Tidak Ditemukan'
-      return self.response
+    return self.response
+
+  def getByColoumn(self, column, op, value):
+    result = self.Orm.getByColumn(column, op, value)
+    if result != None:
+      self.response['status'] = True
+      self.response['data'] = result.serialize()
+    else:
+      self.response['message'] = u'Data Tidak Ditemukan'
     return self.response
 
   def post(self, data):
@@ -31,6 +39,7 @@ class BaseCrud():
     validator = MyValidator()
     dovalidate = validator.wrp_validate(args, self.Orm.addNewSchema)
     if(dovalidate['status']==False):
+      self.response['status'] = False
       self.response['message'] = dovalidate['messages']
       return self.response
     else :
@@ -44,9 +53,13 @@ class BaseCrud():
     validator = MyValidator()
     dovalidate = validator.wrp_validate(args, self.Orm.updateSchema)
     if(dovalidate['status']==False):
-      return self.my_response(valid_status=False, code=422, messages=dovalidate['messages'])
-    result = self.Orm.doUpdate(id, args)
-    return self.my_response(data=result.serialize())
+      self.response['status'] = False
+      self.response['message'] = dovalidate['messages']
+    else :
+      result = self.Orm.doUpdate(id, args)
+      self.response['status'] = True
+      self.response['data'] = result.serialize()
+    return self.response
 
   def delete(self, id):
     me = self.Orm.find(id)

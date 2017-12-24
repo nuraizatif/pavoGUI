@@ -16,8 +16,22 @@ Pivotal Form
     <dl>
       {{ form.csrf_token }}
       {{ render_field(form.pivotal_id) }}
-      <input class="btn btn-primary" type="submit" value="Login">
+      {{ form.submit_search }}
+      {{ form.submit_update }}
     </dl>
   </form>
+  {% if notif['data'] != '' : %}
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">{{ notif['data']['title'] }}</h4>
+        <h6 class="card-subtitle mb-2 text-muted">{{ notif['data']['type'] }}/#{{ notif['data']['pivotal_id'] }} (Current Status : {{ notif['data']['status'] }})</h6>
+        <p class="card-text">{{ notif['data']['description'] }}</p>
+        <p class="card-text"></p>
+        <p class="card-text">Last Inquiry Data Pivotal : {{ notif['data']['updated_at'] }}</p>
+        <a href="{{ notif['data']['url'] }}" target="_blank" class="btn btn-success">Go to Pivotal</a>
+        <a href="{{ notif['data']['url_to_practitest'] }}" class="btn btn-info">Go to Practitest Form</a>
+      </div>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}

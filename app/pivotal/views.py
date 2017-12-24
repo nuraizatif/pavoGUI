@@ -1,56 +1,21 @@
-# Import Request
-import requests
-
 # Import development class
 from var_dump import var_dump
 
 # Import important class.
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, request
 from flask_wtf import FlaskForm 
-from wtforms import StringField
+from wtforms import StringField, SubmitField
 from wtforms.validators import InputRequired
 from jinja2 import TemplateNotFound
 
-# Import model
-from app.pivotal.model import Pivotal as pivotalModel
-
-# Import parent
-from app import app, view
+# Import actions
+from app.pivotal.actions import PivotalAction
 
 # Create form fucntion.
 class PivotalForm(FlaskForm):
   pivotal_id = StringField('Pivotal ID', validators=[InputRequired()])
-
-class PivotalAction(view.BaseCrud):
-  """docstring for PivotalAction"""
-  def __init__(self, Model):
-    super(PivotalAction, self).__init__(Model)
-
-  def findId(self, pivotal_id):
-    # Find data in database.
-    result = self.get(pivotal_id)
-    return result
-
-  def getDataPivotal(self, pivotal_id):
-    # Find data in Pivotal use Pivotal API.
-    ## Define URL.
-    url = str(app.config['PIVOTAL_API_URL']) + '/projects/' + str(app.config['PIVOTAL_PRONGHORN_PROJECT_ID']) + '/stories/' + str(pivotal_id)
-    ## Define header.
-    headers = {
-      'X-TrackerToken': str(app.config['PIVOTAL_USER_TOKEN'])
-    }
-    r = requests.get(url, headers=headers)
-    json_data = r.json()
-    if json_data['kind'] == 'error' and json_data['error']:
-      self.response['message'] = json_data['error']
-    else :
-      self.response['status'] = True
-      self.response['message'] = u'Data Ditemukan.'
-      self.response['data'] = json_data
-    return self.response
-
-  def function():
-    pass
+  submit_search = SubmitField('Search', render_kw={"class": "btn btn-primary"})
+  submit_update = SubmitField('Update Data Pivotal', render_kw={"class": "btn btn-warning"})
 
 # Create Blueprint.
 pivotal = Blueprint('pivotal', __name__)
@@ -65,7 +30,8 @@ def pivotal_form():
   # Define notif.
   notif = {
     'status' : 'danger',
-    'msg' : ''
+    'msg' : '',
+    'data' : ''
   }
 
   # Define action.
@@ -75,24 +41,56 @@ def pivotal_form():
   if form.validate_on_submit():
     # Get pivotal id value.
     pivotal_id = form.pivotal_id.data
+    updateButton = form.submit_update.data
 
     # Get data from database.
-    result = pivotalAction.findId(pivotal_id)
+    result = pivotalAction.findByPivotalID(pivotal_id)
 
     if result['status'] == False :
-      # Get data from pivotal
+      # Get data from pivotal.
       data_pivotal = pivotalAction.getDataPivotal(pivotal_id)
       # Check status get data.
       if data_pivotal['status'] == False:
         # Return error form request.
         notif['msg'] = data_pivotal['message']
       else :
-        # Return success msg.
-        notif['status'] = 'success'
-        notif['msg'] = u'Data Ditemukan.'
+        # Set msg data found in pivotal
+        notif['msg'] = u'Data Ditemukan di pivotal tracker.'
+        # Processing data to database.
+        ## Define data.
+        data ={
+          'pivotal_id': str(data_pivotal['data']['id']),
+          'title': data_pivotal['data']['name'],
+          'type': data_pivotal['data']['story_type'],
+          'status': data_pivotal['data']['current_state'],
+          'json_data': str(data_pivotal['data'])
+        }
+        if 'description' in data_pivotal['data']:
+          data['description'] = data_pivotal['data']['description']
+
+        insert_data = pivotalAction.insertData(data)
+
+        if insert_data['status'] == False:
+          # Return error form request.
+          notif['msg'] = insert_data['message']
+        else :
+          # Return success msg.
+          notif['status'] = 'success'
+          notif['msg'] = u'Data Ditemukan di pivotal tracker dan berhasil dimasukan ke dalam database.'
+
+          # Parsing data.
+          notif['data'] = pivotalAction.parsingData(insert_data['data'])
     else :
       # Parsing data from database.
-      notif['msg'] = result['data']
+      notif['status'] = 'success'
+      notif['msg'] = u'Data Berhasil Ditemukan Di Database'
+
+      if updateButton:
+        # update data pivotal.
+        result = pivotalAction.updatePivotal(pivotal_id)
+
+      # Parsing data.
+      notif['data'] = pivotalAction.parsingData(result['data'])
 
   # Try to load template.
   try:
