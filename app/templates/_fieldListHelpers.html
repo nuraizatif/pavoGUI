@@ -1,0 +1,36 @@
+{% macro render_fieldlist(field) %}
+  {% from "_formHelpers.html" import render_field %}
+
+  {% set required = '' %}
+  {% set has_error = '' %}
+
+  {% if field.flags.required : %}
+      {% set required = 'required' %}
+  {% endif %}
+
+  {% if field.errors : %}
+      {% set has_error = 'has-error' %}
+  {% endif %}
+
+  {% for formField in field.entries %}
+    <div class="form-group  {{ required }} {{ has_error }}">
+      <label class="control-label" for="{{ field.id }}">{{ field.label }} {{ loop.index }}</label>
+      {% for fieldList in formField.form %}
+        {% if fieldList.type == 'CSRFTokenField' %}
+          {{ fieldList }}
+        {% else %}
+          {{ render_field(fieldList) }}
+        {% endif %}
+      {% endfor %}
+      {% if field.errors %}
+        <ul class=errors>
+        {% for error in field.errors %}
+          <li>
+            <p class="help-block">{{ error }}</p>
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endmacro %}

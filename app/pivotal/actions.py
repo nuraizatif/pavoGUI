@@ -1,8 +1,8 @@
 # Import Request, ast
 import requests, ast
 
-# Import model
-from app.pivotal.model import Pivotal as pivotalModel
+# Import important class.
+from flask import request, url_for
 
 # Import parent
 from app import app, view
@@ -83,5 +83,5 @@ class PivotalAction(view.BaseCrud):
     data['updated_at'] = data['updated_at'].replace('T', ' ')
     dict_data = ast.literal_eval(data['json_data'])
     data['url'] = dict_data['url']
-    data['url_to_practitest'] = request.base_url + '/practitest/' + str(data['id'])
+    data['url_to_practitest'] = url_for('practitest.pratitest_form', id=str(data['id']))
     return data

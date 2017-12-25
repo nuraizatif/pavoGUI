@@ -1,0 +1,44 @@
+{% extends "bootstrap/base.html" %}
+{% from "_formHelpers.html" import render_field %}
+{% from "_fieldListHelpers.html" import render_fieldlist %}
+
+{% block title %}
+Pivotal Form
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if notif['msg'] != '' %}
+    <div class="alert alert-{{ notif['status'] }}" role="alert">
+      {{ notif['msg'] }}
+    </div>
+  {% endif %}
+  <form method="POST" action="/practitestForm/{{ notif['data']['id'] }}">
+    <dl>
+      {{ form.csrf_token }}
+      {{ render_field(form.pivotal_id) }}
+      {{ render_field(form.pivotal_title) }}
+      {{ render_field(form.pivotal_type) }}
+      {{ render_field(form.pivotal_description) }}
+      {{ render_field(form.pivotal_status) }}
+      {{ render_field(form.practitest_status) }}
+      {{ render_field(form.practitest_testing_phase) }}
+      {{ render_field(form.practitest_testing_level) }}
+      {{ render_field(form.practitest_product_component) }}
+      {{ render_field(form.practitest_os) }}
+      {{ render_field(form.practitest_test_case) }}
+      {{ render_field(form.practitest_release) }}
+      {{ render_field(form.robot_type) }}
+      {{ render_fieldlist(form.practitest_testcase) }}
+      {{ form.save_data }}
+      {{ form.create_run }}
+    </dl>
+  </form>
+  {% if notif['log'] != '' %}
+    <div class="form-group   ">
+      <label class="control-label" for="logs">Robotframework Log</label>
+      <textarea class="form-control" id="logs" name="logs"  disabled style="height:200px;resize: none;">{{ notif['log'] }}</textarea>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

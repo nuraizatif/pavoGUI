@@ -1,0 +1,15 @@
+Log for robotframework running : 
+OUPUT : 
+==============================================================================
+45                                                                            
+==============================================================================
+wakwaw                                                                | PASS |
+------------------------------------------------------------------------------
+45                                                                    | PASS |
+1 critical test, 1 passed, 0 failed
+1 test total, 1 passed, 0 failed
+==============================================================================
+Output:  /Users/auliarahmani/Virtualenvs/pavoGUI/output.xml
+Log:     /Users/auliarahmani/Virtualenvs/pavoGUI/log.html
+Report:  /Users/auliarahmani/Virtualenvs/pavoGUI/report.html
+

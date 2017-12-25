@@ -18,4 +18,4 @@ class AlterDescriptionPivotalsNullable(Migration):
         with self.schema.table('pivotals') as table:
             for col in enumerate(cols):
                 if col in table.get_columns():
-                    table.string('description').change()
+                    table.text('description').change()

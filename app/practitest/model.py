@@ -120,7 +120,7 @@ class Practitest(CrudBase):
     'test_case': { 'type': 'string', 'required': True },
     'test_type': { 'type': 'string', 'required': True },
     'release': { 'type': 'string', 'required': True },
-    'test_status': { 'type': 'string', 'required': True }
+    'test_status': { 'type': 'string', 'required': False }
   }
   updateSchema = {
     'pratitest_req_id': { 'type': 'string', 'required': False },
@@ -134,7 +134,7 @@ class Practitest(CrudBase):
     'test_case': { 'type': 'string', 'required': True },
     'test_type': { 'type': 'string', 'required': True },
     'release': { 'type': 'string', 'required': True },
-    'test_status': { 'type': 'string', 'required': True }
+    'test_status': { 'type': 'string', 'required': False }
   }
 
   def __init__(self):

@@ -13,7 +13,7 @@ else:
 
 class Config():
   HOST = 'localhost'
-  PORT = 8000
+  PORT = 5000
   DEBUG = True
   TESTING = False
   ORATOR_DATABASES = {

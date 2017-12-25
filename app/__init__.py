@@ -35,9 +35,11 @@ db  = Orator(app)
 
 # Import Blueprint.
 from app.pivotal.views import pivotal as pivotalForm
+from app.practitest.views import practitest as practitestForm
 
 # Registering Blueprint.
 app.register_blueprint(pivotalForm)
+app.register_blueprint(practitestForm)
 
 # Registering Index Apps.
 @app.route('/')

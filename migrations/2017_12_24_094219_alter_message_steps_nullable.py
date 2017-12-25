@@ -19,5 +19,5 @@ class AlterMessageStepsNullable(Migration):
         with self.schema.table('steps') as table:
             for col in enumerate(cols):
                 if col in table.get_columns():
-                    table.string('message').change()
+                    table.text('message').change()
             pass

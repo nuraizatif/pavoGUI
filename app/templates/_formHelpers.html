@@ -1,9 +1,24 @@
 {% macro render_field(field) %}
   {% set required = '' %}
-  {% set has_error = '' %} 
+  {% set disabled = '' %}
+  {% set has_error = '' %}
+  {% set custom_style = '' %}
+  {% set default_value = '' %} 
 
   {% if field.flags.required : %}
       {% set required = 'required' %}
+  {% endif %}
+
+  {% if field.render_kw['disabled']: %}
+      {% set disabled = 'disabled' %}
+  {% endif %}
+
+  {% if field.render_kw['style'] : %}
+      {% set custom_style = field.render_kw['style'] %}
+  {% endif %}
+
+  {% if field.value : %}
+      {% set default_value = field.value %}
   {% endif %}
 
   {% if field.errors : %}
@@ -12,7 +27,17 @@
 
   <div class="form-group  {{ required }} {{ has_error }}">
     <label class="control-label" for="{{ field.id }}">{{ field.label }}</label>
-    <input class="form-control" id="{{ field.id }}" name="{{ field.name }}" {{ required }} type="text" value="">
+    {% if field.type == 'StringField' %}
+    <input class="form-control" id="{{ field.id }}" name="{{ field.name }}" {{ required }} {{ disabled }} style="{{ custom_style }}" type="text" value="{{ default_value }}">
+    {% elif field.type == 'TextField' %}
+      <textarea class="form-control" id="{{ field.id }}" name="{{ field.name }}" {{ required }} {{ disabled }} style="{{ custom_style }}">{{ default_value }}</textarea>
+    {% elif field.type == 'SelectField' %}
+      <select class="form-control" id="{{ field.id }}" name="{{ field.name }}" {{ required }} {{ disabled }} style="{{ custom_style }}">
+        {%  for key, value in field.choices: %}
+          <option value="{{ key }}">{{ value }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
     {% if field.errors %}
       <ul class=errors>
       {% for error in field.errors %}

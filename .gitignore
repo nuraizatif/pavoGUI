@@ -6,6 +6,10 @@ __pycache__/
 # Development phase file
 config.cfg
 orator.yaml
+log.html
+output.html
+output.xml
+report.html
 
 # C extensions
 *.so

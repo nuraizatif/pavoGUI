@@ -1,21 +1,21 @@
+# Import Request, ast
+import requests, ast
+
 # Import development class
 from var_dump import var_dump
 
 # Import important class.
 from flask import Blueprint, render_template, abort, request
-from flask_wtf import FlaskForm 
-from wtforms import StringField, SubmitField
-from wtforms.validators import InputRequired
 from jinja2 import TemplateNotFound
+
+# Import model
+from app.pivotal.model import Pivotal as pivotalModel
 
 # Import actions
 from app.pivotal.actions import PivotalAction
 
-# Create form fucntion.
-class PivotalForm(FlaskForm):
-  pivotal_id = StringField('Pivotal ID', validators=[InputRequired()])
-  submit_search = SubmitField('Search', render_kw={"class": "btn btn-primary"})
-  submit_update = SubmitField('Update Data Pivotal', render_kw={"class": "btn btn-warning"})
+# Import form
+from app.pivotal.form import PivotalForm
 
 # Create Blueprint.
 pivotal = Blueprint('pivotal', __name__)

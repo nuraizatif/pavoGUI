@@ -8,7 +8,7 @@ class AlterPractitestLibIdTestLibrariesNullable(Migration):
         Run the migrations.
         """
         with self.schema.table('test_libraries') as table:
-            table.text('pratitest_lib_id').nullable().change()
+            table.string('pratitest_lib_id').nullable().change()
             pass
 
     def down(self):
