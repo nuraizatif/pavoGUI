@@ -1,6 +1,7 @@
 # Import important class.
 from flask_wtf import FlaskForm 
 from wtforms import StringField, SubmitField, TextField, SelectField, FieldList, FormField
+from wtforms.validators import InputRequired
 
 # Create Field List.
 class PractitestTestCase(FlaskForm):
@@ -126,7 +127,8 @@ class PractitestFrom(FlaskForm):
     u'Release',
     render_kw={
       'style' : 'width:200px;',
-    }
+    },
+    validators=[InputRequired()]
   )
   robot_type = SelectField(
     u'Robotframework Type',

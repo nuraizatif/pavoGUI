@@ -65,7 +65,6 @@ class PivotalAction(view.BaseCrud):
       # Update data.
       self.response = self.updateData(dataDatabase['data']['id'], data)
     return self.response
-    
 
   def insertData(self, data):
     # Insert data.

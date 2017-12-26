@@ -1,6 +1,9 @@
 # Import development class
 from var_dump import var_dump
 
+# Import parent
+from app import app, view
+
 # Import subprocess.
 import subprocess
 
@@ -81,3 +84,29 @@ class RunFile():
     log = f.read()
     f.close()
     return log
+
+
+class PractitestAction(view.BaseCrud):
+  """docstring for PractitestAction"""
+  def __init__(self, Model):
+    super(PractitestAction, self).__init__(Model)
+
+  def findId(self, id):
+    # Find data in database.
+    result = self.get(id)
+    return result
+
+  def findByPivotalID(self, column, op, pivotals_id):
+    # Find data in database.
+    result = self.getByColoumn(column, op, pivotals_id)
+    return result
+
+  def insertData(self, data):
+    # Insert data.
+    result = self.post(data)
+    return result
+
+  def updateData(self, id, data):
+    # Insert data.
+    result = self.put(id, data)
+    return result

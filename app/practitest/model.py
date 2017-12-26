@@ -14,13 +14,13 @@ class Steps(CrudBase):
   addNewSchema = {
     'test_library_id': { 'type': 'string', 'required': True },
     'steps': { 'type': 'string', 'required': True },
-    'status': { 'type': 'string', 'required': True },
+    'status': { 'type': 'string', 'required': False },
     'message': { 'type': 'string', 'required': False }
   }
   updateSchema = {
     'test_library_id': { 'type': 'string', 'required': True },
     'steps': { 'type': 'string', 'required': True },
-    'status': { 'type': 'string', 'required': True },
+    'status': { 'type': 'string', 'required': False },
     'message': { 'type': 'string', 'required': False }
   }
 
@@ -43,14 +43,14 @@ class TestLibraries(CrudBase):
     'pratitest_id': { 'type': 'string', 'required': True },
     'title': { 'type': 'string', 'required': True },
     'gherkin': { 'type': 'string', 'required': True },
-    'status': { 'type': 'string', 'required': True },
+    'status': { 'type': 'string', 'required': False },
   }
   updateSchema = {
     'pratitest_lib_id': { 'type': 'string', 'required': False },
     'pratitest_id': { 'type': 'string', 'required': True },
     'title': { 'type': 'string', 'required': True },
     'gherkin': { 'type': 'string', 'required': True },
-    'status': { 'type': 'string', 'required': True },
+    'status': { 'type': 'string', 'required': False },
   }
 
   def __init__(self):

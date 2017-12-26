@@ -7,10 +7,11 @@ from jinja2 import TemplateNotFound
 
 # Import model
 from app.pivotal.model import Pivotal as pivotalModel
+from app.practitest.model import Steps, TestLibraries, Practitest, Instances
 
 # Import actions
 from app.pivotal.actions import PivotalAction
-from app.practitest.actions import CreateRobotFile, RunFile 
+from app.practitest.actions import CreateRobotFile, RunFile, PractitestAction
 
 # Import form
 from app.practitest.form import PractitestFrom
@@ -43,6 +44,7 @@ def pratitest_form(id):
 
   # Define action.
   pivotalAction = PivotalAction(pivotalModel)
+  practitestAction = PractitestAction(Practitest)
 
   # Get Data.
   pivotalData = pivotalAction.findId(id)
@@ -61,7 +63,9 @@ def pratitest_form(id):
       notif['status'] = 'success'
       notif['msg'] = 'Data Berhasil Dimasukan Ke dalam Databases'
 
-      # Prepare data for table practitests
+
+
+      # Prepare data for table practitests.
       data = {
         'pivotals_id' : id,
         'status' : form.practitest_status.data,
@@ -73,6 +77,55 @@ def pratitest_form(id):
         'test_type': form.pivotal_type.data.title(),
         'release': form.practitest_release.data,
       }
+
+      # Insert data to table practitest.
+      try:
+        result = practitestAction.insertData(data)
+      except Exception as e:
+        notif['status'] = 'danger'
+        notif['msg'] = 'Gagal dalam membuat record di tabel practitest, alasan : ' + str(e)
+        return render_template('practitestForm.html', form=form, notif=notif)
+
+      # Get data test.
+      dataTestCase = form.practitest_testcase.data
+
+      # Define library action.
+      libraryAction = PractitestAction(TestLibraries)
+      stepAction = PractitestAction(Steps)
+
+      # Make iteration.
+      for testCase in dataTestCase:
+        # Prepare data library.
+        dataLibrary = {
+          'pratitest_id': str(result['data']['id']),
+          'title': testCase['testcase_title'],
+          'gherkin': testCase['testcase_gherkin'],
+        }
+
+        try:
+          resultLibrary = libraryAction.insertData(dataLibrary)
+        except Exception as e:
+          notif['status'] = 'danger'
+          notif['msg'] = 'Gagal dalam membuat record di tabel practitest, alasan : ' + str(e)
+          return render_template('practitestForm.html', form=form, notif=notif)
+
+        # Split Lines.
+        splitlines = testCase['testcase_gherkin'].splitlines()
+
+        # Iteration step.
+        for step in splitlines:
+          # Prepare data for steps.
+          dataStep = {
+            'test_library_id': str(resultLibrary['data']['id']),
+            'steps': step,
+          }
+
+          try:
+            resultSteps = stepAction.insertData(dataStep)
+          except Exception as e:
+            notif['status'] = 'danger'
+            notif['msg'] = 'Gagal dalam membuat record di tabel practitest, alasan : ' + str(e)
+            return render_template('practitestForm.html', form=form, notif=notif)
 
     elif run_button :
       # Logic for create file robot and run it
