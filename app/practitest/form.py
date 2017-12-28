@@ -1,10 +1,14 @@
+# Import development class
+from var_dump import var_dump
+
 # Import important class.
 from flask_wtf import FlaskForm 
-from wtforms import StringField, SubmitField, TextField, SelectField, FieldList, FormField
+from wtforms import StringField, SubmitField, TextField, SelectField, FieldList, FormField, HiddenField
 from wtforms.validators import InputRequired
 
 # Create Field List.
 class PractitestTestCase(FlaskForm):
+  testcase_id = HiddenField(u'Test Case ID')
   testcase_title = StringField(
     u'Title',
     render_kw={
@@ -55,6 +59,7 @@ class PractitestFrom(FlaskForm):
       'style' : 'width:200px;',
     }
   )
+  practitest_id = HiddenField(u'Practitest ID')
   practitest_status = SelectField(
     u'Practitest Status',
     choices=[
@@ -143,6 +148,7 @@ class PractitestFrom(FlaskForm):
   practitest_testcase = FieldList(FormField(PractitestTestCase), u'Practitest Test Case', min_entries=1)
   save_data = SubmitField(u'Save Data', render_kw={"class": "btn btn-primary"})
   create_run = SubmitField(u'Create File and Run', render_kw={"class": "btn btn-warning"})
+  go_practitest = SubmitField(u'Check Summary To Practitest', render_kw={"class": "btn btn-info"})
 
   def __init__(self, pivotalData):
     super(PractitestFrom, self).__init__()
@@ -153,3 +159,38 @@ class PractitestFrom(FlaskForm):
     self.pivotal_type.value = pivotalData['type'].title()
     self.pivotal_description.value = pivotalData['description']
     self.pivotal_status.value = pivotalData['status'].title()
+
+    # Rewrite value practitest
+    if pivotalData['practitest']:
+      practitestData = pivotalData['practitest']
+      self.practitest_id.value = practitestData['id']
+      self.practitest_id.data = practitestData['id']
+      self.practitest_status.value = practitestData['status']
+      self.practitest_testing_phase.value = practitestData['test_phase']
+      self.practitest_testing_level.value = practitestData['test_level']
+      self.practitest_product_component.value = practitestData['product_component']
+      self.practitest_os.value = practitestData['os']
+      self.practitest_test_case.value = practitestData['test_case']
+      self.practitest_release.value = practitestData['release']
+
+    # Rewrite value Libraries
+    if pivotalData['test_library']:
+      # Set library data (biar gampangin aja mangil variable).
+      libraryData = pivotalData['test_library']
+      self.practitest_testcase.min_entries = len(libraryData) + 1
+
+      # Define iteration.
+      iteration = 0
+      for LibraryValue in libraryData:
+        # Set Value.
+        self.practitest_testcase.entries[iteration].form.testcase_id.value = LibraryValue['id']
+        self.practitest_testcase.entries[iteration].form.testcase_id.data = LibraryValue['id']
+        self.practitest_testcase.entries[iteration].form.testcase_title.value = LibraryValue['title']
+        self.practitest_testcase.entries[iteration].form.testcase_gherkin.value = LibraryValue['gherkin']
+
+        if len(self.practitest_testcase.entries) < self.practitest_testcase.min_entries:
+          # Append new entry
+          self.practitest_testcase.append_entry()
+
+        # Set iteration.
+        iteration = iteration + 1

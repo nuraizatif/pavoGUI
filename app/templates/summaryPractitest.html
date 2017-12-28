@@ -1,0 +1,77 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Summary Pracitest
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if notif['msg'] != '' %}
+    <div class="alert alert-{{ notif['status'] }}" role="alert">
+      {{ notif['msg'] }}
+    </div>
+  {% endif %}
+  <h1>Pivotal Summary</h1>
+  <dl class="dl-horizontal">
+    {% for value in info['pivotal'] %}
+      <dt>{{ value['title'] }}</dt>
+      <dd>
+        {% if value['status'] != '' :%}
+          <span class="btn btn-{{value['status']}}">{{ value['value'] }}</span>
+        {% else : %}
+          <span>{{ value['value'] }}</span>
+        {% endif %}
+      </dd>
+    {% endfor %}
+  </dl>
+  <h1>Practitest Summary</h1>
+  <dl class="dl-horizontal">
+    {% for value in info['practitest'] %}
+      <dt>{{ value['title'] }}</dt>
+      <dd>
+        {% if value['status'] != '' :%}
+          <span class="btn btn-{{value['status']}}">{{ value['value'] }}</span>
+        {% else : %}
+          <span>{{ value['value'] }}</span>
+        {% endif %}
+      </dd>
+    {% endfor %}
+  </dl>
+  <center><h3>Test Library</h3></center>
+  {% for library in info['testlibrary'] %}
+    <h3>{{ library['title'] }}</h3>
+    <dl class="dl-horizontal">
+      {% for value in library['summary'] %}
+        <dt>{{ value['title'] }}</dt>
+        <dd>
+          {% if value['status'] != '' :%}
+            <span class="btn btn-{{value['status']}}">{{ value['value'] }}</span>
+          {% else : %}
+            <span>{{ value['value'] }}</span>
+          {% endif %}
+        </dd>
+      {% endfor %}
+    </dl>
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Step</th>
+          <th>Status</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for step in library['step'] %}
+        <tr class="{{ step['style'] }}">
+          <td>{{ step['id'] }}</td>
+          <td>{{ step['step'] }}</td>
+          <td>{{ step['status'] }}</td>
+          <td>{{ step['message'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -89,6 +89,16 @@ class CrudBase(Model):
     return result
 
   @classmethod
+  def getAllByColumn(self, column, op, value):
+    result = self.where(column, op, value).order_by('created_at', 'DESC').get()
+    return result
+
+  @classmethod
+  def delAllByColumn(self, column, op, value):
+    result = self.where(column, op, value).delete()
+    return result
+
+  @classmethod
   def addNew(self, data):
     me = self()
     cols = schema.get_column_listing(me.__table__)

@@ -21,6 +21,7 @@ Pivotal Form
       {{ render_field(form.pivotal_type) }}
       {{ render_field(form.pivotal_description) }}
       {{ render_field(form.pivotal_status) }}
+      {{ form.practitest_id }}
       {{ render_field(form.practitest_status) }}
       {{ render_field(form.practitest_testing_phase) }}
       {{ render_field(form.practitest_testing_level) }}
@@ -32,6 +33,7 @@ Pivotal Form
       {{ render_fieldlist(form.practitest_testcase) }}
       {{ form.save_data }}
       {{ form.create_run }}
+      {{ form.go_practitest }}
     </dl>
   </form>
   {% if notif['log'] != '' %}

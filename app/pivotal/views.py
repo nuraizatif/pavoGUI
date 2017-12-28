@@ -34,6 +34,12 @@ def pivotal_form():
     'data' : ''
   }
 
+  if 'status' in request.args:
+    notif['status'] = request.args["status"]
+
+  if 'msg' in request.args:
+    notif['msg'] = request.args["msg"]
+
   # Define action.
   pivotalAction = PivotalAction(pivotalModel)
 

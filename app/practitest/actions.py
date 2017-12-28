@@ -85,7 +85,6 @@ class RunFile():
     f.close()
     return log
 
-
 class PractitestAction(view.BaseCrud):
   """docstring for PractitestAction"""
   def __init__(self, Model):
@@ -96,9 +95,18 @@ class PractitestAction(view.BaseCrud):
     result = self.get(id)
     return result
 
-  def findByPivotalID(self, column, op, pivotals_id):
+  def findByColumn(self, column, op, value):
     # Find data in database.
-    result = self.getByColoumn(column, op, pivotals_id)
+    result = self.getByColoumn(column, op, value)
+    return result
+
+  def findAllByColumn(self, column, op, value):
+    # Find data in database.
+    result = self.getAllByColoumn(column, op, value)
+    return result
+
+  def deleteAllByColumn(self, column, op, value):
+    result = self.delAllByColoumn(column, op, value)
     return result
 
   def insertData(self, data):
@@ -109,4 +117,9 @@ class PractitestAction(view.BaseCrud):
   def updateData(self, id, data):
     # Insert data.
     result = self.put(id, data)
+    return result
+
+  def deleteData(self, id):
+    # Insert data.
+    result = self.delete(id)
     return result

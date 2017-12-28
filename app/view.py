@@ -34,6 +34,21 @@ class BaseCrud():
       self.response['message'] = u'Data Tidak Ditemukan'
     return self.response
 
+  def getAllByColoumn(self, column, op, value):
+    result = self.Orm.getAllByColumn(column, op, value)
+    if result != None:
+      self.response['status'] = True
+      self.response['data'] = result.serialize()
+    else:
+      self.response['message'] = u'Data Tidak Ditemukan'
+    return self.response
+
+  def delAllByColoumn(self, column, op, value):
+    result = self.Orm.delAllByColumn(column, op, value)
+    self.response['status'] = True
+    self.response['message'] = u'Data Di Delete'
+    return self.response
+
   def post(self, data):
     args = data
     validator = MyValidator()
@@ -65,6 +80,9 @@ class BaseCrud():
     me = self.Orm.find(id)
     if me!=None:
       me.delete()
-      return 'Deleted'
+      self.response['status'] = True
+      self.response['message'] = 'Deleted'
     else:
-      return 'Data not found.'
+      self.response['status'] = False
+      self.response['message'] = 'Data Tidak Ditemukan'
+    return self.response

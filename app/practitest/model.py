@@ -18,8 +18,8 @@ class Steps(CrudBase):
     'message': { 'type': 'string', 'required': False }
   }
   updateSchema = {
-    'test_library_id': { 'type': 'string', 'required': True },
-    'steps': { 'type': 'string', 'required': True },
+    'test_library_id': { 'type': 'string', 'required': False },
+    'steps': { 'type': 'string', 'required': False },
     'status': { 'type': 'string', 'required': False },
     'message': { 'type': 'string', 'required': False }
   }
@@ -47,9 +47,9 @@ class TestLibraries(CrudBase):
   }
   updateSchema = {
     'pratitest_lib_id': { 'type': 'string', 'required': False },
-    'pratitest_id': { 'type': 'string', 'required': True },
-    'title': { 'type': 'string', 'required': True },
-    'gherkin': { 'type': 'string', 'required': True },
+    'pratitest_id': { 'type': 'string', 'required': False },
+    'title': { 'type': 'string', 'required': False },
+    'gherkin': { 'type': 'string', 'required': False },
     'status': { 'type': 'string', 'required': False },
   }
 
@@ -125,15 +125,15 @@ class Practitest(CrudBase):
   updateSchema = {
     'pratitest_req_id': { 'type': 'string', 'required': False },
     'pratitest_set_id': { 'type': 'string', 'required': False },
-    'pivotals_id': { 'type': 'string', 'required': True },
-    'status': { 'type': 'string', 'required': True },
-    'test_phase': { 'type': 'string', 'required': True },
-    'test_level': { 'type': 'string', 'required': True },
-    'product_component': { 'type': 'string', 'required': True },
-    'os': { 'type': 'string', 'required': True },
-    'test_case': { 'type': 'string', 'required': True },
-    'test_type': { 'type': 'string', 'required': True },
-    'release': { 'type': 'string', 'required': True },
+    'pivotals_id': { 'type': 'string', 'required': False },
+    'status': { 'type': 'string', 'required': False },
+    'test_phase': { 'type': 'string', 'required': False },
+    'test_level': { 'type': 'string', 'required': False },
+    'product_component': { 'type': 'string', 'required': False },
+    'os': { 'type': 'string', 'required': False },
+    'test_case': { 'type': 'string', 'required': False },
+    'test_type': { 'type': 'string', 'required': False },
+    'release': { 'type': 'string', 'required': False },
     'test_status': { 'type': 'string', 'required': False }
   }
 

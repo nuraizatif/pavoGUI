@@ -16,7 +16,7 @@
     <div class="form-group  {{ required }} {{ has_error }}">
       <label class="control-label" for="{{ field.id }}">{{ field.label }} {{ loop.index }}</label>
       {% for fieldList in formField.form %}
-        {% if fieldList.type == 'CSRFTokenField' %}
+        {% if fieldList.type == 'CSRFTokenField' or fieldList.type == 'HiddenField' %}
           {{ fieldList }}
         {% else %}
           {{ render_field(fieldList) }}
