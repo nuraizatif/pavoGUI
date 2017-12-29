@@ -10,7 +10,8 @@ log.html
 output.html
 output.xml
 report.html
-app/practitest/logs/api/*
+app/practitest/logs/*
+app/practitest/testcase/*
 
 # C extensions
 *.so
