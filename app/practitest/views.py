@@ -88,9 +88,9 @@ def updateStatusTest(ouputdir, pivotal_id):
             typeMsg = type(stepMsg).__name__
             if typeMsg == 'list' :
               lengMsg = len(robotStep['msg'])
-              stepTemp['msg'] = robotStep['msg'][lengMsg-1]['#text']
+              stepTemp['msg'] = stepMsg[lengMsg-1]['#text']
             else :
-              stepTemp['msg'] = robotStep['#text']
+              stepTemp['msg'] = stepMsg['#text']
         testTemp['step'].append(stepTemp)
       arrayOutput.append(testTemp)
   else :

@@ -181,7 +181,7 @@ class PractitestFrom(FlaskForm):
 
       # Define iteration.
       iteration = 0
-      for LibraryValue in libraryData:
+      for LibraryValue in reversed(libraryData):
         # Set Value.
         self.practitest_testcase.entries[iteration].form.testcase_id.value = LibraryValue['id']
         self.practitest_testcase.entries[iteration].form.testcase_id.data = LibraryValue['id']
