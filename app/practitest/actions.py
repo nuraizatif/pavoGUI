@@ -4,8 +4,10 @@ from var_dump import var_dump
 # Import parent
 from app import app, view
 
-# Import subprocess.
+# Import subprocess, request
 import subprocess
+import requests
+import json
 
 class CreateRobotFile():
   """docstring for ClassName"""
@@ -123,3 +125,211 @@ class PractitestAction(view.BaseCrud):
     # Insert data.
     result = self.delete(id)
     return result
+
+class PractitestRequest():
+  """docstring for PractitestRequest"""
+  def __init__(self, dataPivotal, dataPracitest):
+    ## Set dataPivotal.
+    self.dataPivotal = dataPivotal
+    ## Set dataPractitest.
+    self.dataPractitest = dataPracitest
+    ## Set Mail Url.
+    self.mainUrl = app.config['PRACTITEST_API_URL'] + '/projects/' + app.config['PRACTITEST_PROJECT_ID']
+    ## Set Auth.
+    self.auth = (app.config['PRACTITEST_USER'], app.config['PRACTITEST_USER_TOKEN'])
+    ## Set Header.
+    self.header = {
+      'Content-Type': 'application/json'
+    }
+    ## Set Default return.
+    self.returnData = {
+      'status' : False,
+      'msg' : '',
+      'data' : ''
+    }
+
+  def createTestLibrary(self, data = {}):
+    """
+    Example input :
+    {
+      "data": {
+        "type": "tests",
+        "attributes": {
+          "name": "Test Aizat",
+          "description": "Test Aizat",
+          "author-id": 8933,
+          "status": "Ready", # status
+          "custom-fields": {
+            "---f-20267": "Unit", # test_phase
+            "---f-20269": "Sanity", # test_phase_level
+            "---f-20270": "Application System", # product_component
+            "---f-20272": "Mac", # OS
+            "---f-20289": "Positive", # test_case
+            "---f-20290": "Feature"# test_type
+          },
+        },
+        "steps": {
+          "data": [
+            {
+              "name": "step one",
+              "description": "Step 1 description",
+              "expected-results": "result"
+            },
+            {
+              "name": "step two",
+              "expected-results": "result2"
+            }
+          ]
+        }
+      }
+    }
+
+    Output : tests id for createRequrement, createTestSet
+    [112345, 567890]
+    """
+    # Define steps.
+    steps = []
+
+    arrayStep = data['gherkin'].splitlines()
+
+    # looping Split line.
+    for stepVal in arrayStep:
+      tempStep = {
+        "name": stepVal,
+        "expected-results": stepVal
+      }
+      steps.append(tempStep)
+
+    # Define Data.
+    data = {
+      "data": {
+        "type": "tests",
+        "attributes": {
+          "name": data['title'],
+          "description": data['title'],
+          "author-id": 8933,
+          "status": self.dataPractitest['status'], # status
+          "custom-fields": {
+            "---f-20267": self.dataPractitest['test_phase'], # test_phase
+            "---f-20269": self.dataPractitest['test_level'], # test_level
+            "---f-20270": self.dataPractitest['product_component'], # product_component
+            "---f-20272": self.dataPractitest['os'], # OS
+            "---f-20289": self.dataPractitest['test_case'], # test_case
+            "---f-20290": self.dataPractitest['test_type']# test_type
+          },
+        },
+        "steps": {
+          "data": steps
+        }
+      }
+    }
+
+    dataText = json.dumps(data)
+
+    # Define URL.
+    url = self.mainUrl + '/tests.json'
+    res = requests.post(
+      url,
+      auth=self.auth,
+      data=dataText,
+      headers=self.header
+    )
+
+    # Get response.
+    jsonData = res.json()
+
+    # Check valid response.
+    if res.status_code == 200 and 'data' in jsonData:
+      self.returnData['status'] = True
+      self.returnData['msg'] = ''
+      self.returnData['data'] = jsonData['data']
+    else :
+      # Set Default msg.
+      self.returnData['msg'] = 'POST Request Practitest (Test Library) Gagal'
+      # Set error msg from response.
+      if 'errors' in jsonData:
+        self.returnData['msg'] = jsonData['errors'][0]['title']
+      # Set data.
+      self.returnData['data'] = jsonData
+    
+    return self.returnData
+
+  def createRequrement(self, testId):
+    """
+    Example input :
+    {
+      "data": {
+        "type": "requirements",
+        "attributes": {
+          "name": "test Aizat",
+          "author-id": 8933,
+          "custom-fields": {
+            "---f-20270": "Application System",
+            "---f-20290": "Feature",
+            "---f-20313": "i20171101"
+          },
+        },
+        "traceability": {
+          "test-ids": [
+            32222,
+            53333
+          ]
+        }
+      }
+    }
+
+    Output : reqirement id for insert to database.
+    1234151
+    """
+    # Define Data.
+    data ={
+      "data": {
+        "type": "requirements",
+        "attributes": {
+          "name": self.dataPivotal['title'],
+          "author-id": 8933,
+          "custom-fields": {
+            "---f-20270": self.dataPractitest['product_component'], # product_component
+            "---f-20290": self.dataPractitest['test_type'], # test_type
+            "---f-20313": self.dataPractitest['release'] # release
+          },
+        },
+        "traceability": {
+          "test-ids": testId
+        }
+      }
+    }
+
+    dataText = json.dumps(data)
+
+    # Define URL.
+    url = self.mainUrl + '/requirements.json'
+    res = requests.post(
+      url,
+      auth=self.auth,
+      data=dataText,
+      headers=self.header
+    )
+
+    # Get response.
+    jsonData = res.json()
+
+    # Check valid response.
+    if res.status_code == 200 and 'data' in jsonData:
+      self.returnData['status'] = True
+      self.returnData['msg'] = ''
+      self.returnData['data'] = jsonData['data']
+    else :
+      # Set Default msg.
+      self.returnData['msg'] = 'POST Request Practitest (Requirement) Gagal'
+      # Set error msg from response.
+      if 'errors' in jsonData:
+        self.returnData['msg'] = jsonData['errors'][0]['title']
+      # Set data.
+      self.returnData['data'] = jsonData
+    
+    return self.returnData
+
+  def createTestSet(self ):
+    pass
+    

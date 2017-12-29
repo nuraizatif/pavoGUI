@@ -31,6 +31,7 @@ class Config():
 
   APP_NAME = cfg['app']['name']
   SECRET_KEY = cfg['app']['secret_key']
+
   PIVOTAL_API_URL = cfg['pivotal']['url']
   PIVOTAL_USER_TOKEN = cfg['pivotal']['user_token']
   PIVOTAL_PRONGHORN_PROJECT_ID = cfg['pivotal']['pronghorn_project_id']
@@ -38,6 +39,11 @@ class Config():
   PIVOTAL_MUNNIN_PROJECT_ID = cfg['pivotal']['munnin_project_id']
   PIVOTAL_FRIGATE_PROJECT_ID = cfg['pivotal']['frigate_project_id']
   PIVOTAL_PHOENIX_PROJECT_ID = cfg['pivotal']['phoenix_project_id']
+
+  PRACTITEST_API_URL = cfg['practitest']['url']
+  PRACTITEST_USER = cfg['practitest']['user']
+  PRACTITEST_USER_TOKEN = cfg['practitest']['token']
+  PRACTITEST_PROJECT_ID = cfg['practitest']['id']
 
 class ProductionConfig(Config):
   DEBUG = False

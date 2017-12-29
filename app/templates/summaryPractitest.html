@@ -73,5 +73,13 @@ Summary Pracitest
       </tbody>
     </table>
   {% endfor %}
+  <center>
+    <form method="POST" action="/summaryPractitest/{{ notif['data']['id'] }}">
+      {{ form.csrf_token }}
+      {{ form.practitest_request }}
+      {{ form.commend_pivotal }}
+      {{ form.commend_pivotal_update }}
+    </form>
+  </center>
 </div>
 {% endblock %}

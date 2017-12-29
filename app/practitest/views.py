@@ -12,10 +12,10 @@ from app.practitest.model import Steps, TestLibraries, Practitest, Instances
 
 # Import actions
 from app.pivotal.actions import PivotalAction
-from app.practitest.actions import CreateRobotFile, RunFile, PractitestAction
+from app.practitest.actions import CreateRobotFile, RunFile, PractitestAction, PractitestRequest
 
 # Import form
-from app.practitest.form import PractitestFrom
+from app.practitest.form import PractitestFrom, PractitestRequestForm
 
 # Create Blueprint.
 practitest = Blueprint('practitest', __name__)
@@ -383,9 +383,10 @@ def practitestSummary(id):
     'testlibrary' : [],
   }
 
-   # Define action.
+  # Define action.
   pivotalAction = PivotalAction(pivotalModel)
   practitestAction = PractitestAction(Practitest)
+  libraryAction = PractitestAction(TestLibraries)
 
   # Get Data.
   pivotalData = pivotalAction.findId(id)
@@ -506,7 +507,6 @@ def practitestSummary(id):
     info['practitest'].append(tempPractitest)
 
   # Get Data Test Libraries.
-  libraryAction = PractitestAction(TestLibraries)
   libraryData = libraryAction.findAllByColumn('pratitest_id', '=', practitestData['data']['id'])
   if libraryData['status'] == False:
     return redirect(url_for('practitest.pratitest_form', msg=libraryData['message'], status='danger'))
@@ -557,9 +557,78 @@ def practitestSummary(id):
       # Append all data library and step.
       info['testlibrary'].append(sumTestLibrary)
 
+  # Create Form
+  form = PractitestRequestForm()
+
+  # Check if form is submitted and validated
+  if form.validate_on_submit():
+    # Get button value.
+    practitest_request = form.practitest_request.data
+    commend_pivotal = form.commend_pivotal.data
+    commend_pivotal_update = form.commend_pivotal_update.data
+
+    if practitest_request :
+      # Create Practitest Data and update database.
+      # Create Object PractitestRequest
+      practitestReq = PractitestRequest(pivotalData['data'], practitestData['data'])
+
+      # Define testList.
+      testIdList = []
+
+      ## Create Test Library.
+      for value in reversed(libraryData['data']):
+        ### Looping test_library.
+        stepAdd = practitestReq.createTestLibrary(value)
+
+        ### Get id.
+        if stepAdd['status'] == False:
+          notif['status'] = 'danger'
+          notif['msg'] = stepAdd['msg']
+          return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
+        tempId = str(stepAdd['data']['id'])
+
+        updateData = {
+          'pratitest_lib_id' : tempId
+        }
+
+        ### Update id in test_library.
+        updateData = libraryAction.updateData(value['id'], updateData)
+
+        ### Append to array testList.
+        testIdList.append(tempId)
+
+      ## Create requrement.
+      ### Use array testList.
+      requirementAdd = practitestReq.createRequrement(testIdList)
+
+      ### Get id.
+      if requirementAdd['status'] == False:
+        notif['status'] = 'danger'
+        notif['msg'] = stepAdd['msg']
+        return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
+
+      ### Update to database.
+      updateData = {
+        'pratitest_req_id' : requirementAdd['data']['id']
+      }
+      updateData = practitestAction.updateData(practitestData['data']['id'], updateData)
+
+      ## Create Test Set.
+      ## Create Instance
+      ## Do Run
+
+      # Update Practitest Data and update database.
+
+      # Reload this page.
+      return redirect(url_for('practitest.practitestSummary', id=id))
+    elif commend_pivotal :
+      pass
+    elif commend_pivotal_update : 
+      pass
+
   # Try to load template.
   try:
-    return render_template('summaryPractitest.html', notif=notif, info=info)
+    return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
   except TemplateNotFound:
     abort(404)
 

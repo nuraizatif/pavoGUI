@@ -5,12 +5,11 @@ OUPUT :
 ==============================================================================
 Test                                                                  | PASS |
 ------------------------------------------------------------------------------
-Test Salah                                                            | FAIL |
-No keyword with name 'When Request "local" ke pah "/api/v1/hello"' found.
+Test Salah                                                            | PASS |
 ------------------------------------------------------------------------------
-45                                                                    | FAIL |
-2 critical tests, 1 passed, 1 failed
-2 tests total, 1 passed, 1 failed
+45                                                                    | PASS |
+2 critical tests, 2 passed, 0 failed
+2 tests total, 2 passed, 0 failed
 ==============================================================================
 Output:  /Users/auliarahmani/Virtualenvs/pavoGUI/output.xml
 Log:     /Users/auliarahmani/Virtualenvs/pavoGUI/log.html

@@ -194,3 +194,12 @@ class PractitestFrom(FlaskForm):
 
         # Set iteration.
         iteration = iteration + 1
+
+# Create Practitest Form.
+class PractitestRequestForm(FlaskForm):
+  practitest_request = SubmitField(u'Send Data To Practitest (Create / Update)', render_kw={"class": "btn btn-primary"})
+  commend_pivotal = SubmitField(u'Create Commennt To Pivotal', render_kw={"class": "btn btn-warning"})
+  commend_pivotal_update = SubmitField(u'Create Commennt To Pivotal And Update Status', render_kw={"class": "btn btn-info"})
+
+  def __init__(self):
+    super(PractitestRequestForm, self).__init__()

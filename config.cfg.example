@@ -31,3 +31,9 @@ munnin_project_id =
 huggin_project_id =
 frigate_project_id =
 phoenix_project_id =
+
+[practitest]
+url = https://api.practitest.com/api/v2
+user = 
+token =
+id = 
