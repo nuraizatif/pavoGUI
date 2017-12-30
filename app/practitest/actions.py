@@ -206,7 +206,7 @@ class PractitestRequest():
         "type": "tests",
         "attributes": {
           "name": data['title'],
-          "description": data['title'],
+          "description": self.dataPivotal['description'] + '\r\n with pivotal id : ' + self.dataPivotal['pivotal_id'],
           "author-id": 8933,
           "status": self.dataPractitest['status'], # status
           "custom-fields": {
@@ -287,6 +287,7 @@ class PractitestRequest():
         "type": "requirements",
         "attributes": {
           "name": self.dataPivotal['title'],
+          "description": self.dataPivotal['description'] + '\r\n with pivotal id : ' + self.dataPivotal['pivotal_id'],
           "author-id": 8933,
           "custom-fields": {
             "---f-20270": self.dataPractitest['product_component'], # product_component
@@ -330,6 +331,181 @@ class PractitestRequest():
     
     return self.returnData
 
-  def createTestSet(self ):
-    pass
+  def createTestSet(self, testId):
+    """
+    Example input = {
+      "data": {
+        "type": "sets",
+        "attributes": {
+          "name": "one",
+          "custom-fields": {
+            "---f-20267": "Unit",
+            "---f-20268": "Chrome",
+            "---f-20269": "Sanity",
+            "---f-20270": "Application System",
+            "---f-20271": "Staging (UAT)",
+            "---f-20274": "Topup Pulsa",
+            "---f-20289": "Positive",
+            "---f-20313": "20171207"
+          },
+        },
+        "instances": {
+          "test-ids": [
+            32222,
+            53333
+          ]
+        }
+      }
+    }
+
+    Output : test set id for insert to database.
+    1234151
+    """
+    # Define Data.
+    data ={
+      "data": {
+        "type": "sets",
+        "attributes": {
+          "name": self.dataPivotal['title'],
+          "custom-fields": {
+            "---f-20267": self.dataPractitest['test_phase'], # test_phase
+            "---f-20269": self.dataPractitest['test_level'], # test_level
+            "---f-20270": self.dataPractitest['product_component'], # product_component
+            "---f-20272": self.dataPractitest['os'], # OS
+            "---f-20289": self.dataPractitest['test_case'], # test_case
+            "---f-20290": self.dataPractitest['test_type'], # test_type
+            "---f-20313": self.dataPractitest['release'] # release
+          },
+        },
+        "instances": {
+          "test-ids": testId
+        }
+      }
+    }
+
+    dataText = json.dumps(data)
+
+    # Define URL.
+    url = self.mainUrl + '/sets.json'
+    res = requests.post(
+      url,
+      auth=self.auth,
+      data=dataText,
+      headers=self.header
+    )
+
+    # Get response.
+    jsonData = res.json()
+
+    # Check valid response.
+    if res.status_code == 200 and 'data' in jsonData:
+      self.returnData['status'] = True
+      self.returnData['msg'] = ''
+      self.returnData['data'] = jsonData['data']
+    else :
+      # Set Default msg.
+      self.returnData['msg'] = 'POST Request Practitest (Test Set) Gagal'
+      # Set error msg from response.
+      if 'errors' in jsonData:
+        self.returnData['msg'] = jsonData['errors'][0]['title']
+      # Set data.
+      self.returnData['data'] = jsonData
     
+    return self.returnData
+
+  def getInstances(self, setId):
+    # Define URL.
+    url = self.mainUrl + '/instances.json' + '?set-ids=' + setId
+    res = requests.get(
+      url,
+      auth=self.auth,
+      headers=self.header
+    )
+
+    # Get response.
+    jsonData = res.json()
+
+    # Check valid response.
+    if res.status_code == 200 and 'data' in jsonData:
+      self.returnData['status'] = True
+      self.returnData['msg'] = ''
+      self.returnData['data'] = jsonData['data']
+    else :
+      # Set Default msg.
+      self.returnData['msg'] = 'Get Request Practitest (Instances) Gagal'
+      # Set error msg from response.
+      if 'errors' in jsonData:
+        self.returnData['msg'] = jsonData['errors'][0]['title']
+      # Set data.
+      self.returnData['data'] = jsonData
+    
+    return self.returnData
+
+  def runStep(self, instanceId, steps):
+    """
+    Example Input :
+    {
+      "data": {
+        "type": "instances",
+        "attributes": {
+          "instance-id": 98142
+        },
+        "steps": {
+          "data": [
+            {
+              "name": "step one",
+              "expected-results": "result",
+              "status": "FAILED"
+            },
+            {
+              "name": "step two",
+              "expected-results": "result2",
+              "status": "PASSED"
+            }
+          ]
+        }
+      }
+    }
+    """
+    # Define data
+    data = {
+      "data": {
+        "type": "instances",
+        "attributes": {
+          "instance-id": instanceId
+        },
+        "steps": {
+          "data": steps
+        }
+      }
+    }
+
+    dataText = json.dumps(data)
+
+    # Define URL.
+    url = self.mainUrl + '/runs.json'
+    res = requests.post(
+      url,
+      auth=self.auth,
+      data=dataText,
+      headers=self.header
+    )
+
+    # Get response.
+    jsonData = res.json()
+
+    # Check valid response.
+    if res.status_code == 200 and 'data' in jsonData:
+      self.returnData['status'] = True
+      self.returnData['msg'] = ''
+      self.returnData['data'] = jsonData['data']
+    else :
+      # Set Default msg.
+      self.returnData['msg'] = 'POST Request Practitest (Run) Gagal'
+      # Set error msg from response.
+      if 'errors' in jsonData:
+        self.returnData['msg'] = jsonData['errors'][0]['title']
+      # Set data.
+      self.returnData['data'] = jsonData
+    
+    return self.returnData

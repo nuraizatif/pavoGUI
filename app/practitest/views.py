@@ -134,7 +134,7 @@ def updateStatusTest(ouputdir, pivotal_id):
   practitestStatus = 'PASS'
 
   itLib = 0
-  for library in libraryData['data']:
+  for library in reversed(libraryData['data']):
     if arrayOutput[itLib]['status'] == 'FAIL':
       practitestStatus = 'FAIL'
 
@@ -604,20 +604,62 @@ def practitestSummary(id):
       ### Get id.
       if requirementAdd['status'] == False:
         notif['status'] = 'danger'
-        notif['msg'] = stepAdd['msg']
+        notif['msg'] = requirementAdd['msg']
+        return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
+
+      ## Create Test Set.
+      testSetAdd = practitestReq.createTestSet(testIdList)
+
+      ### Get id.
+      if testSetAdd['status'] == False:
+        notif['status'] = 'danger'
+        notif['msg'] = testSetAdd['msg']
         return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
 
       ### Update to database.
       updateData = {
-        'pratitest_req_id' : requirementAdd['data']['id']
+        'pratitest_req_id' : requirementAdd['data']['id'],
+        'pratitest_set_id' : testSetAdd['data']['id'],
       }
       updateData = practitestAction.updateData(practitestData['data']['id'], updateData)
 
-      ## Create Test Set.
-      ## Create Instance
-      ## Do Run
+      ## Do Run.
+      ## Get Instance id.
+      instanceGet = practitestReq.getInstances(testSetAdd['data']['id'])
+      ### Get id.
+      if instanceGet['status'] == False:
+        notif['status'] = 'danger'
+        notif['msg'] = instanceGet['msg']
+        return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
+      ### Iteration instance id.
+      for value in instanceGet['data']:
+        #### Get library id according to test id (pratitest_lib_id).
+        libraryData = libraryAction.findByColumn('pratitest_lib_id', '=', value['attributes']['test-id'])
 
-      # Update Practitest Data and update database.
+        #### Iteration All Step.
+        stepData = stepAction.findAllByColumn('test_library_id', '=', libraryData['data']['id'])
+
+        #### Define array step.
+        arrayStep = []
+
+        #### Prepare Steps.
+        for step in reversed(stepGet['data']):
+          testStep = {
+            'name' : step['steps'],
+            'expected-results' : step['steps'],
+            'status' : 'NO RUN'
+          }
+
+          if step['status'] == 'PASS':
+            testStep['actual-results'] = step['steps']
+            testStep['status'] = 'PASSED'
+          elif step['status'] == 'FAIL':
+            testStep['actual-results'] = step['message']
+            testStep['status'] = 'FAILED'
+          arrayStep.append(testStep)
+
+        #### Request Run.
+        runTest = practitestReq.runStep(value['id'], arrayStep)
 
       # Reload this page.
       return redirect(url_for('practitest.practitestSummary', id=id))
