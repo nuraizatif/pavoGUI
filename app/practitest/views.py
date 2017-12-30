@@ -568,64 +568,75 @@ def practitestSummary(id):
     commend_pivotal_update = form.commend_pivotal_update.data
 
     if practitest_request :
-      # Create Practitest Data and update database.
+      # Define test Id.
+      testSetId = ''
+      
       # Create Object PractitestRequest
       practitestReq = PractitestRequest(pivotalData['data'], practitestData['data'])
 
-      # Define testList.
-      testIdList = []
+      # Check pratitest_set_id.
+      if str(practitestData['data']['pratitest_set_id']) == 'None':
+        # Create Practitest Data and update database.
 
-      ## Create Test Library.
-      for value in reversed(libraryData['data']):
-        ### Looping test_library.
-        stepAdd = practitestReq.createTestLibrary(value)
+        # Define testList.
+        testIdList = []
+
+        ## Create Test Library.
+        for value in reversed(libraryData['data']):
+          ### Looping test_library.
+          stepAdd = practitestReq.createTestLibrary(value)
+
+          ### Get id.
+          if stepAdd['status'] == False:
+            notif['status'] = 'danger'
+            notif['msg'] = stepAdd['msg']
+            return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
+          tempId = str(stepAdd['data']['id'])
+
+          updateData = {
+            'pratitest_lib_id' : tempId
+          }
+
+          ### Update id in test_library.
+          updateData = libraryAction.updateData(value['id'], updateData)
+
+          ### Append to array testList.
+          testIdList.append(tempId)
+
+        ## Create requrement.
+        ### Use array testList.
+        requirementAdd = practitestReq.createRequrement(testIdList)
 
         ### Get id.
-        if stepAdd['status'] == False:
+        if requirementAdd['status'] == False:
           notif['status'] = 'danger'
-          notif['msg'] = stepAdd['msg']
+          notif['msg'] = requirementAdd['msg']
           return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
-        tempId = str(stepAdd['data']['id'])
 
+        ## Create Test Set.
+        testSetAdd = practitestReq.createTestSet(testIdList)
+
+        ### Get id.
+        if testSetAdd['status'] == False:
+          notif['status'] = 'danger'
+          notif['msg'] = testSetAdd['msg']
+          return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
+
+        ### Update to database.
         updateData = {
-          'pratitest_lib_id' : tempId
+          'pratitest_req_id' : requirementAdd['data']['id'],
+          'pratitest_set_id' : testSetAdd['data']['id'],
         }
+        updateData = practitestAction.updateData(practitestData['data']['id'], updateData)
 
-        ### Update id in test_library.
-        updateData = libraryAction.updateData(value['id'], updateData)
-
-        ### Append to array testList.
-        testIdList.append(tempId)
-
-      ## Create requrement.
-      ### Use array testList.
-      requirementAdd = practitestReq.createRequrement(testIdList)
-
-      ### Get id.
-      if requirementAdd['status'] == False:
-        notif['status'] = 'danger'
-        notif['msg'] = requirementAdd['msg']
-        return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
-
-      ## Create Test Set.
-      testSetAdd = practitestReq.createTestSet(testIdList)
-
-      ### Get id.
-      if testSetAdd['status'] == False:
-        notif['status'] = 'danger'
-        notif['msg'] = testSetAdd['msg']
-        return render_template('summaryPractitest.html', notif=notif, info=info, form=form)
-
-      ### Update to database.
-      updateData = {
-        'pratitest_req_id' : requirementAdd['data']['id'],
-        'pratitest_set_id' : testSetAdd['data']['id'],
-      }
-      updateData = practitestAction.updateData(practitestData['data']['id'], updateData)
+        testSetId = testSetAdd['data']['id']
+      else :
+        # Set Test Set Id.
+        testSetId = practitestData['data']['pratitest_set_id']
 
       ## Do Run.
       ## Get Instance id.
-      instanceGet = practitestReq.getInstances(testSetAdd['data']['id'])
+      instanceGet = practitestReq.getInstances(testSetId)
       ### Get id.
       if instanceGet['status'] == False:
         notif['status'] = 'danger'
