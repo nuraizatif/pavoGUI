@@ -570,7 +570,7 @@ def practitestSummary(id):
     if practitest_request :
       # Define test Id.
       testSetId = ''
-      
+
       # Create Object PractitestRequest
       practitestReq = PractitestRequest(pivotalData['data'], practitestData['data'])
 
@@ -675,9 +675,49 @@ def practitestSummary(id):
       # Reload this page.
       return redirect(url_for('practitest.practitestSummary', id=id))
     elif commend_pivotal :
-      pass
+      # Create Pivotal Action
+      commentPivotalAction = PivotalAction(pivotalModel)
+      practitestAction = PractitestAction(Practitest)
+
+      # Get data pivotal.
+      pivotalData = pivotalAction.findId(id)
+      if pivotalData['status'] == False:
+        return redirect(url_for('pivotal.pivotal_form', msg=pivotalData['message'], status='danger'))
+
+      # Get Data practitest.
+      practitestData = practitestAction.findByColumn('pivotals_id', '=', id)
+
+      # Test Comment.
+      commentPivotal = commentPivotalAction.sendCommentPivotal(pivotalData['data']['pivotal_id'], practitestData['data'])
+
+      if commentPivotal['status'] == False:
+        notif['msg'] = commentPivotal['message']
+
+      notif['status'] = 'success'
+      notif['msg'] = 'Comment berhasil ditambahkan'
     elif commend_pivotal_update : 
-      pass
+      # Create Pivotal Action
+      commentPivotalAction = PivotalAction(pivotalModel)
+      practitestAction = PractitestAction(Practitest)
+
+      # Get data pivotal.
+      pivotalData = pivotalAction.findId(id)
+      if pivotalData['status'] == False:
+        return redirect(url_for('pivotal.pivotal_form', msg=pivotalData['message'], status='danger'))
+
+      # Get Data practitest.
+      practitestData = practitestAction.findByColumn('pivotals_id', '=', id)
+
+      # Test Comment.
+      commentPivotal = commentPivotalAction.sendCommentPivotal(pivotalData['data']['pivotal_id'], practitestData['data'], True)
+
+      notif['status'] = 'success'
+      notif['msg'] = 'Comment berhasil ditambahkan dan status pivotal berhasil di ubah'
+
+      if commentPivotal['status'] == False:
+        notif['status'] = 'danger'
+        notif['msg'] = commentPivotal['message']
+
 
   # Try to load template.
   try:

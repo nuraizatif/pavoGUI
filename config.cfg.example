@@ -1,6 +1,7 @@
 [app]
 name = atmosphere
 secret_key = DontTellAnyone
+base_url = http://localhost:5000
 
 [database]
 default_connection = mysql

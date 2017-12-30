@@ -31,6 +31,7 @@ class Config():
 
   APP_NAME = cfg['app']['name']
   SECRET_KEY = cfg['app']['secret_key']
+  BASE_URL = cfg['app']['base_url']
 
   PIVOTAL_API_URL = cfg['pivotal']['url']
   PIVOTAL_USER_TOKEN = cfg['pivotal']['user_token']

@@ -1,5 +1,5 @@
 # Import Request, ast
-import requests, ast
+import requests, ast, json
 
 # Import important class.
 from flask import request, url_for
@@ -64,6 +64,83 @@ class PivotalAction(view.BaseCrud):
 
       # Update data.
       self.response = self.updateData(dataDatabase['data']['id'], data)
+    return self.response
+
+  def sendCommentPivotal(self, pivotal_id, data = {}, update = False):
+    ## Define URL.
+    url = str(app.config['PIVOTAL_API_URL']) + '/projects/' + str(app.config['PIVOTAL_PRONGHORN_PROJECT_ID']) + '/stories/' + str(pivotal_id)
+    ## Define header.
+    headers = {
+      'X-TrackerToken': str(app.config['PIVOTAL_USER_TOKEN']),
+      'Content-Type': 'application/json'
+    }
+
+    # Define Text.
+    text = ''
+    text = text + 'Menurut Testing Sistem, task ini hasilnya : ***' + data['test_status'] + '*** \r\n'
+
+    if update:
+      text = text + 'Komen ini sudah mengubah status task ini yaa. \r\n\r\n'
+      update_to = ''
+      if data['test_status'] == 'PASS':
+        update_to = 'accepted'
+      elif data['test_status'] == 'FAIL':
+        update_to = 'rejected'
+
+      if update_to != '':
+        # Prepare update data.
+        updateData = {
+          'current_state' : update_to
+        }
+
+        ## Define data text.
+        dataText = json.dumps(updateData)
+        # Request to url.
+        r = requests.put(
+          url,
+          data=dataText,
+          headers=headers
+        )
+        # Get data json.
+        json_data = r.json()
+
+        # Check error.
+        if json_data['kind'] == 'error' and json_data['error']:
+          self.response['status'] = False
+          self.response['message'] = json_data['error']
+          return self.response
+    else :
+      text = text + 'Komen ini tidak mengubah status task ini yaa. \r\n\r\n'
+
+    # Add Link Summary
+    text = text + 'Ini detail dari test nya : ' + app.config['BASE_URL'] + url_for('practitest.practitestSummary', id=str(data['pivotals_id'])) + '\r\n\r\n'
+
+    if update == False:
+      text = text + 'Kalau ***FAILED*** check as soon as posible yak, kalau ga komennya bisa ngerubah status task ini loh 😝.'
+
+    ## Define data.
+    data = {
+      'text' : text
+    }
+    ## Define data text.
+    dataText = json.dumps(data)
+    # Request to url.
+    r = requests.post(
+      url + '/comments',
+      data=dataText,
+      headers=headers
+    )
+    # Get data json.
+    json_data = r.json()
+    # Check error.
+    if json_data['kind'] == 'error' and json_data['error']:
+      self.response['status'] = False
+      self.response['message'] = json_data['error']
+    else :
+      self.response['status'] = True
+      self.response['message'] = u'Data Ditemukan.'
+      self.response['data'] = json_data
+
     return self.response
 
   def insertData(self, data):
