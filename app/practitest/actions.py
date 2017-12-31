@@ -34,6 +34,8 @@ class CreateRobotFile():
       self.unitSettings('Library', 'Collections')
       self.unitSettings('Library', 'RequestsLibrary')
       self.unitSettings('Resource', '../../keyword/api.robot')
+    elif robot_type == 'web':
+      pass
 
   # Return settings.
   def getSettings(self):

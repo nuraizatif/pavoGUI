@@ -25,6 +25,15 @@ class BaseCrud():
       self.response['message'] = u'Data Tidak Ditemukan'
     return self.response
 
+  def getAll(self):
+    result = self.Orm.getAllData()
+    if result != None:
+      self.response['status'] = True
+      self.response['data'] = result.serialize()
+    else:
+      self.response['message'] = u'Data Tidak Ditemukan'
+    return self.response
+
   def getByColoumn(self, column, op, value):
     result = self.Orm.getByColumn(column, op, value)
     if result != None:

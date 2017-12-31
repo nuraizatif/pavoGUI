@@ -1,5 +1,5 @@
-# Import Request, ast
-import requests, ast
+# Import Request
+import requests
 
 # Import development class
 from var_dump import var_dump

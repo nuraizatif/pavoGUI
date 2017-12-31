@@ -73,7 +73,8 @@ class Practitest(CrudBase):
     'test_case',
     'test_type',
     'release',
-    'test_status'
+    'test_status',
+    'robot_type',
   ]
   __fillable__ = [
     'pratitest_req_id',
@@ -87,7 +88,8 @@ class Practitest(CrudBase):
     'test_case',
     'test_type',
     'release',
-    'test_status'
+    'test_status',
+    'robot_type',
   ]
 
   __searchable__ = [
@@ -103,7 +105,8 @@ class Practitest(CrudBase):
     'test_case',
     'test_type',
     'release',
-    'test_status'
+    'test_status',
+    'robot_type',
   ]
 
   srcRawQry = ""
@@ -120,7 +123,8 @@ class Practitest(CrudBase):
     'test_case': { 'type': 'string', 'required': True },
     'test_type': { 'type': 'string', 'required': True },
     'release': { 'type': 'string', 'required': True },
-    'test_status': { 'type': 'string', 'required': False }
+    'test_status': { 'type': 'string', 'required': False },
+    'robot_type': { 'type': 'string', 'required': False }
   }
   updateSchema = {
     'pratitest_req_id': { 'type': 'string', 'required': False },
@@ -134,7 +138,8 @@ class Practitest(CrudBase):
     'test_case': { 'type': 'string', 'required': False },
     'test_type': { 'type': 'string', 'required': False },
     'release': { 'type': 'string', 'required': False },
-    'test_status': { 'type': 'string', 'required': False }
+    'test_status': { 'type': 'string', 'required': False },
+    'robot_type': { 'type': 'string', 'required': False }
   }
 
   def __init__(self):

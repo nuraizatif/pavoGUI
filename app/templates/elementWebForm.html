@@ -1,0 +1,58 @@
+{% extends "bootstrap/base.html" %}
+{% from "_formHelpers.html" import render_field %}
+
+{% block title %}
+Element Web Form
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if notif['msg'] != '' %}
+    <div class="alert alert-{{ notif['status'] }}" role="alert">
+      {{ notif['msg'] }}
+    </div>
+  {% endif %}
+  <form method="POST" action="/elementWebForm">
+    <dl>
+      {{ form.csrf_token }}
+      {{ form.element_id }}
+      {{ render_field(form.name_element) }}
+      {{ render_field(form.element_type) }}
+      {{ render_field(form.element_value) }}
+      {{ form.submit_button }}
+    </dl>
+  </form>
+  {% if notif['data'] != '' :%}
+    <h2>Element Web</h2>
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+    {% for element in notif['data'] %}
+        <tbody>
+          {% if loop.index % 2 == 0 :%}
+            <tr>
+          {% else :%}
+            <tr class="active">
+          {% endif %}
+            <th scope="row">{{ element['id'] }}</th>
+            <td>{{ element['name'] }}</td>
+            <td>{{ element['type'] }}</td>
+            <td>{{ element['value'] }}</td>
+            <td>
+              <a href="{{ url_for('elementweb.elementWebForm', id=element['id'], op='edit') }}" class="btn btn-warning">Edit</a>
+              <a href="{{ url_for('elementweb.elementWebForm', id=element['id'], op='delete') }}" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>
+        </tbody>
+    {% endfor %}
+    </table>
+  {% endif %}
+</div>
+{% endblock %}

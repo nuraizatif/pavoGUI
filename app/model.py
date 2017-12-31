@@ -84,6 +84,11 @@ class CrudBase(Model):
     return result
 
   @classmethod
+  def getAllData(self):
+    result = self.get()
+    return result
+
+  @classmethod
   def getByColumn(self, column, op, value):
     result = self.where(column, op, value).order_by('created_at', 'DESC').first()
     return result

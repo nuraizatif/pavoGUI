@@ -234,6 +234,7 @@ def pratitest_form(id):
         'test_case': form.practitest_test_case.data,
         'test_type': form.pivotal_type.value,
         'release': form.practitest_release.data,
+        'robot_type': form.robot_type.data,
       }
 
       # Insert data to table practitest.
