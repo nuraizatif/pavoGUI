@@ -34,7 +34,10 @@ class CreateRobotFile():
       self.unitSettings('Library', 'Collections')
       self.unitSettings('Library', 'RequestsLibrary')
       self.unitSettings('Resource', '../../keyword/api.robot')
-    elif robot_type == 'web':
+    elif testingType == 'web':
+      self.unitSettings('Resource', '../../keyword/web.robot')
+      self.unitSettings('Suite Setup', 'Connect Database')
+      self.unitSettings('Suite Teardown', 'Disconnect Database')
       pass
 
   # Return settings.

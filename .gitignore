@@ -12,6 +12,9 @@ output.xml
 report.html
 app/practitest/logs/*
 app/practitest/testcase/*
+selenium/*
+app/static/image_robot/*
+.DS_Store
 
 # C extensions
 *.so

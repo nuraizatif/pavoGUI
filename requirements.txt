@@ -10,3 +10,6 @@ mysqlclient
 robotframework
 robotframework-requests
 xmltodict
+robotframework-selenium2library
+pymysql
+robotframework-databaselibrary

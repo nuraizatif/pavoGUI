@@ -4,7 +4,7 @@ from var_dump import var_dump
 # Import important class.
 from flask import Blueprint, render_template, abort, redirect, url_for, request
 from jinja2 import TemplateNotFound
-import xmltodict, json, os
+import xmltodict, json, os, shutil, errno
 
 # Import model
 from app.pivotal.model import Pivotal as pivotalModel
@@ -76,13 +76,22 @@ def updateStatusTest(ouputdir, pivotal_id):
         stepTemp['msg'] = ''
         if stepStatus == 'FAIL':
           if 'kw' in robotStep:
-            stepMsg = robotStep['kw']['msg']
-            typeMsg = type(stepMsg).__name__
-            if typeMsg == 'list' :
-              lengMsg = len(stepMsg)
-              stepTemp['msg'] = stepMsg[lengMsg-1]['#text']
+            if 'msg' in robotStep['kw']:
+              stepMsg = robotStep['kw']['msg']
+              typeMsg = type(stepMsg).__name__
+              if typeMsg == 'list' :
+                lengMsg = len(stepMsg)
+                stepTemp['msg'] = stepMsg[lengMsg-1]['#text']
+              else :
+                stepTemp['msg'] = stepMsg['#text']
             else :
-              stepTemp['msg'] = stepMsg['#text']
+              stepMsg = robotStep['kw']
+              typeMsg = type(stepMsg).__name__
+              if typeMsg == 'list' :
+                lengMsg = len(stepMsg)
+                stepTemp['msg'] = stepMsg[lengMsg-1]['msg']['#text']
+              else :
+                stepTemp['msg'] = stepMsg['msg']['#text']
           else :
             stepMsg = robotStep['msg']
             typeMsg = type(stepMsg).__name__
@@ -133,7 +142,32 @@ def updateStatusTest(ouputdir, pivotal_id):
   # Update practitest status
   practitestStatus = 'PASS'
 
+  # Move File
+  tempDir = 'app/practitest/tempImage'
+  desDir = 'app/static/image_robot/' + str(pivotal_id)
+
+  if not os.path.exists(desDir):
+    os.makedirs(desDir)
+
+  # Define array list.
+  listFile = [''] * len([name for name in os.listdir(tempDir) if os.path.isfile(os.path.join(tempDir, name))])
+
+  # Iteration File in tempdir.
+  for name in os.listdir(tempDir):
+    # Define new name.
+    newName = name.replace(' ', '_')
+
+    # Split file to get sequence
+    splitName = name.split('_')
+
+    # Update list array.
+    listFile[int(splitName[0])-1] = str(pivotal_id) + '/' + newName
+
+    # Move File.
+    shutil.move(os.path.join(tempDir, name), os.path.join(desDir, newName))
+
   itLib = 0
+  itFile = 0
   for library in reversed(libraryData['data']):
     if arrayOutput[itLib]['status'] == 'FAIL':
       practitestStatus = 'FAIL'
@@ -151,18 +185,24 @@ def updateStatusTest(ouputdir, pivotal_id):
     itStep = 0
     for step in reversed(stepGet['data']):
       try:
+          fileName = listFile[itFile]
+          itFile = itFile + 1
+      except IndexError:
+          fileName = ''
+
+      try:
         updateStep = {
           'status' : arrayOutput[itLib]['step'][itStep]['status'],
           'message' : arrayOutput[itLib]['step'][itStep]['msg'],
+          'image_dir' : fileName
         }
-        
         resultStep = stepAction.updateData(step['id'], updateStep)
       except Exception as e:
         updateStep = {
           'status' : 'No Run',
           'message' : '',
+          'image_dir' : fileName
         }
-
         resultStep = stepAction.updateData(step['id'], updateStep)
       itStep = itStep + 1
     itLib = itLib + 1
@@ -196,10 +236,10 @@ def pratitest_form(id):
     notif['msg'] = request.args["msg"]
 
   # Define file directory.
-  fileDir = 'app/practitest/testcase/api'
+  fileDir = ''
 
   # Define log file directory.
-  logDir = 'app/practitest/logs/api/' + id + '.txt'
+  logDir = ''
 
   # Create object run file.
   runFile = RunFile()
@@ -207,6 +247,15 @@ def pratitest_form(id):
   # Define action.
   practitestAction = PractitestAction(Practitest)
   libraryAction = PractitestAction(TestLibraries)
+
+  # Get Data practitest.
+  practitestData = practitestAction.findByColumn('pivotals_id', '=', id)
+  if practitestData['status'] == True:
+    # Define file directory.
+    fileDir = 'app/practitest/testcase/' + practitestData['data']['robot_type']
+
+    # Define log file directory.
+    logDir = 'app/practitest/logs/'+ practitestData['data']['robot_type']+ '/' + id + '.txt'
 
   # Define variable form.
   form = renderForm(id)
@@ -260,7 +309,7 @@ def pratitest_form(id):
           practitestId = str(result['data']['id'])
           # Prepare data library.
           dataLibrary = {
-            'pratitest_id': '15',
+            'pratitest_id': practitestId,
             'title': testCase['testcase_title'],
             'gherkin': testCase['testcase_gherkin'],
           }
@@ -354,6 +403,7 @@ def pratitest_form(id):
           notif['msg'] = 'Status Practitest : ' + practitestData['data']['test_status'] + ' Silahkan menjalankan robot file terlebih dahulu.'
       else :
         notif['msg'] = practitestData['message']
+
   try:
     notif['log'] = runFile.getLog(logDir)
   except Exception as e:
@@ -547,6 +597,7 @@ def practitestSummary(id):
           'step' : step['steps'],
           'status' : step['status'],
           'message' : step['message'],
+          'image_dir' : step['image_dir'],
           'style' : 'warning',
         }
         if step['status'] == 'PASS':

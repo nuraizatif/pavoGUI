@@ -4,10 +4,10 @@ class Steps(CrudBase):
   __table__ = 'steps'
   __primary_key__ = 'id'
   __incrementing__  = True
-  __columns__ = [ 'id', 'test_library_id', 'steps', 'status', 'message']
-  __fillable__ = ['test_library_id', 'steps', 'status', 'message']
+  __columns__ = [ 'id', 'test_library_id', 'steps', 'status', 'message', 'image_dir']
+  __fillable__ = ['test_library_id', 'steps', 'status', 'message' 'image_dir']
 
-  __searchable__ = [ 'id', 'test_library_id', 'steps', 'status', 'message']
+  __searchable__ = [ 'id', 'test_library_id', 'steps', 'status', 'message' 'image_dir']
 
   srcRawQry = ""
   srcQryBind = []
@@ -15,13 +15,15 @@ class Steps(CrudBase):
     'test_library_id': { 'type': 'string', 'required': True },
     'steps': { 'type': 'string', 'required': True },
     'status': { 'type': 'string', 'required': False },
-    'message': { 'type': 'string', 'required': False }
+    'message': { 'type': 'string', 'required': False },
+    'image_dir': { 'type': 'string', 'required': False },
   }
   updateSchema = {
     'test_library_id': { 'type': 'string', 'required': False },
     'steps': { 'type': 'string', 'required': False },
     'status': { 'type': 'string', 'required': False },
-    'message': { 'type': 'string', 'required': False }
+    'message': { 'type': 'string', 'required': False },
+    'image_dir': { 'type': 'string', 'required': False },
   }
 
   def __init__(self):

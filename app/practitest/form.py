@@ -172,6 +172,7 @@ class PractitestFrom(FlaskForm):
       self.practitest_os.value = practitestData['os']
       self.practitest_test_case.value = practitestData['test_case']
       self.practitest_release.value = practitestData['release']
+      self.robot_type.value = practitestData['robot_type']
 
     # Rewrite value Libraries
     if pivotalData['test_library']:
