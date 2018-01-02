@@ -29,16 +29,17 @@ class CreateRobotFile():
 
   # Build default settings.
   def createDefaultSettings(self, testingType = 'api'):
+    self.unitSettings('Resource', '../../keyword/' + testingType + '.robot')
     # Api settings.
     if testingType == 'api':
       self.unitSettings('Library', 'Collections')
       self.unitSettings('Library', 'RequestsLibrary')
-      self.unitSettings('Resource', '../../keyword/api.robot')
     elif testingType == 'web':
-      self.unitSettings('Resource', '../../keyword/web.robot')
       self.unitSettings('Suite Setup', 'Connect Database')
       self.unitSettings('Suite Teardown', 'Disconnect Database')
-      pass
+    elif testingType == 'android':
+      self.unitSettings('Suite Setup', 'Connect Database')
+      self.unitSettings('Suite Teardown', 'Disconnect Database')
 
   # Return settings.
   def getSettings(self):

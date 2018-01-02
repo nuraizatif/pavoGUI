@@ -139,7 +139,8 @@ class PractitestFrom(FlaskForm):
     u'Robotframework Type',
     choices=[
       ('api', 'API Test'),
-      ('web', 'Web / MWEB Test')
+      ('web', 'Web / MWEB Test'),
+      ('android', 'Android'),
     ],
     render_kw={
       'style' : 'width:200px;',
