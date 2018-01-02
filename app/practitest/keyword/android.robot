@@ -70,3 +70,27 @@ Input ke "${field_text}" di Aplikasi, kemudian isi dengan "${value}" tanpa Scree
     Log Many    @{queryResults}
     Log         ${queryResults[0][1]}, ${queryResults[0][0]}
     Input Text      ${queryResults[0][0]}=${queryResults[0][1]}       ${value}
+
+Cari tombol "${tombol}" di bawah
+    @{queryResults} =    Query    SELECT type, value FROM element_web WHERE name = '${tombol}';
+    Log Many                            @{queryResults}
+    Log                                 ${queryResults[0][1]}, ${queryResults[0][0]}
+    ${iteration}    Set Variable        0
+    : FOR             ${iteration}        IN RANGE        0       10
+    \    Swipe           30          600         30          100
+    \    ${find}    Run Keyword And Return Status    Wait Until Page Contains Element    ${queryResults[0][0]}=${queryResults[0][1]}
+    \    Log        ${find}
+    \    Run Keyword If    ${find}     Exit For Loop
+    \    ${iteration}    Set Variable    ${iteration}+1
+    ${count}=                           Evaluate            ${count}+1
+    Set suite variable                  ${count}            ${count}
+    Capture Page Screenshot             ${tempImageDir}/${count}_scroll_down_to_${tombol}.png
+
+
+Valid Login Android
+    Given Buka Aplikasi sepulsa, kemudian tunggu tulisan "Mudah Cepat dan Aman" muncul tanpa Screenshot
+    And Tekan tombol "Button Skip Android" di Aplikasi, kemudian tunggu tulisan "SIGN IN" tanpa Screenshot
+    When Input ke "Field Username Android" di Aplikasi, kemudian isi dengan "aizat@sepulsa.com" tanpa Screenshot
+    And Input ke "Field Password Android" di Aplikasi, kemudian isi dengan "4izatgantenG" tanpa Screenshot
+    And Tekan tombol "Button Show Password Android" di Aplikasi, kemudian tunggu tulisan "4izatgantenG" tanpa Screenshot
+    Then Tekan tombol "Button Sign In Android" di Aplikasi, kemudian tunggu tulisan "Sepulsa Kredit"

@@ -11,7 +11,7 @@ class CreateElementWebTable(Migration):
             table.increments('id')
             table.string('name', 100)
             table.string('type', 100)
-            table.string('value', 255)
+            table.text('value')
             table.timestamps()
 
     def down(self):
