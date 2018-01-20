@@ -118,5 +118,6 @@ def elementWebForm():
   # Try to load template.
   try:
     return render_template('elementWebForm.html', form=form, notif=notif)
+    # return render_template('newElementWebForm.html', form=form, notif=notif)
   except TemplateNotFound:
     abort(404)

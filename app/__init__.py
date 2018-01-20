@@ -47,7 +47,8 @@ app.register_blueprint(elementWebForm)
 @app.route('/')
 def index():
   ## Redirect to pivotal form.
-  return redirect(url_for('pivotal.pivotal_form'))
+  # return redirect(url_for('pivotal.pivotal_form'))
+  return render_template('index.html')
 
 if __name__ == '__main__':
   app.run(debug=True)
